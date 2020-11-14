@@ -11,6 +11,7 @@ var controlador = document.getElementById("controlador")
 var modals = document.getElementById("modals")
 var formActualizar = document.getElementById("formActualizar")
 var formSkill = document.getElementById("formSkill")
+var direccion = document.getElementById("direccion")
 
 // Funcion para mostrar los nombres al iniciar la página
 function mostrarNombres() {
@@ -31,13 +32,10 @@ function mostrarNombres() {
         console.log(err)
     })
 }
-
 mostrarNombres()
 
-// Mostrar la informacion según el usuario que de click
-listaNombres.addEventListener("click", e => {
-    e.preventDefault()
-    numero = e.target.id
+// Funcion para traer los datos de una persona por su ID y reemplazar los datos en los elementos escogidos
+function informacionPersonal(numero){
     let datos = ''
 
     fetch(`https://foro-semana-3.herokuapp.com/persona/${numero}`)
@@ -52,17 +50,20 @@ listaNombres.addEventListener("click", e => {
         personal.innerHTML = datos.desc_personal
         profesional.innerHTML = datos.desc_profesional
         controlador.innerHTML = datos.id
+        direccion.innerHTML = datos.direccion
     })
     .catch(error => {
         console.log(error)
     })
+}
 
+// Funcion para traer las Skills de una persona por su ID y mostrarlas en el porfalio
+function ponerSkills(numero) {
     fetch(`https://foro-semana-3.herokuapp.com/skill/${numero}`)
     .then(rptas => {
         return rptas.json()
     })
     .then(datss => {
-        // console.log(datss.Content)
         let skils = datss.Content
         let contenido = ''
         let contenidomodal = ''
@@ -74,7 +75,7 @@ listaNombres.addEventListener("click", e => {
                                 <div class="portfolio-item-caption-content text-center text-white">Detalles</i></div>
                             </div>
                             <div class="img-fluid d-flex justify-content-center">
-                                <img src="${skils[index].url}" alt="${skils[index].nombre}" style="width: 200px; height: 200px;">
+                                <img src="${skils[index].url}" alt="${skils[index].nombre}" style="width: 200px; height: 200px;object-fit: contain">
                             </div>
                             <!-- <img class="img-fluid" src="assets/img/portfolio/cabin.png" alt="" /> -->
                         </div>
@@ -121,6 +122,15 @@ listaNombres.addEventListener("click", e => {
         listaSkills.innerHTML = contenido
         modals.innerHTML = contenidomodal
     })
+}
+
+// Mostrar la informacion según el usuario que de click
+listaNombres.addEventListener("click", e => {
+    e.preventDefault()
+    numero = e.target.id
+
+    informacionPersonal(numero)
+    ponerSkills(numero)
 })
 
 // Enviar una peteicion POST de SOLICITUD
@@ -128,7 +138,6 @@ formulario.addEventListener("submit", e => {
     e.preventDefault()
 
     let persona = controlador.innerHTML
-    // console.log(persona)
 
     if (persona == 0) {
         alert('Por favor seleccione un portafolio')
@@ -140,7 +149,6 @@ formulario.addEventListener("submit", e => {
             mensaje : formulario["mensaje"].value,
             person_id : controlador.innerHTML
         }
-        // console.log(objConsulta)
     
         let config = {
             method : 'POST',
@@ -160,6 +168,7 @@ formulario.addEventListener("submit", e => {
     }
 })
 
+// Actualizar el personal y profesional
 formActualizar.addEventListener("submit", e => {
     e.preventDefault()
 
@@ -174,8 +183,6 @@ formActualizar.addEventListener("submit", e => {
             "desc_personal":personal,
             "desc_profesional":profesional
         }
-    
-        // console.log(objActualizar)
 
         let config = {
             method : 'PUT',
@@ -187,7 +194,7 @@ formActualizar.addEventListener("submit", e => {
             return rpta.json()
         })
         .then(creacion => {
-            // console.log(creacion)
+            informacionPersonal(numero)
         })
         .catch(err => {
             console.log(err)
@@ -195,6 +202,7 @@ formActualizar.addEventListener("submit", e => {
     }
 })
 
+// Insertar una Skill segun el ID de la persona y se actualiza
 formSkill.addEventListener("submit", e => {
     e.preventDefault()
 
@@ -210,8 +218,6 @@ formSkill.addEventListener("submit", e => {
             "person_id":numero,
             "descripcion":formSkill["descripcion"].value
         }
-    
-        // console.log(objSkill)
 
         let config = {
             method : 'POST',
@@ -223,7 +229,7 @@ formSkill.addEventListener("submit", e => {
             return rpta.json()
         })
         .then(creacion => {
-            // console.log(creacion)
+            ponerSkills(numero)
         })
         .catch(err => {
             console.log(err)
