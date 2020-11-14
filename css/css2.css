@@ -1,0 +1,8 @@
+.nombres{
+    text-decoration: none;
+    color: white;
+}
+
+#controlador {
+    visibility: hidden;
+}
