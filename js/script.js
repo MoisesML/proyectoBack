@@ -199,6 +199,8 @@ formActualizar.addEventListener("submit", e => {
         .catch(err => {
             console.log(err)
         })
+        $("#putModal").modal("hide");
+        formActualizar.reset();
     }
 })
 
@@ -234,5 +236,7 @@ formSkill.addEventListener("submit", e => {
         .catch(err => {
             console.log(err)
         })
+        $("#skillModal").modal("hide");
+        formSkill.reset();
     }
 })
